@@ -1,0 +1,41 @@
+#!/usr/bin/env ruby
+
+require 'thor'
+require 'active_support/core_ext/string/inflections'
+
+class PipelyGenerator < Thor::Group
+  include Thor::Actions
+
+  # Define arguments and options
+  argument :name
+  class_option :config, :default => "~/.pipely-generate/config/"
+
+  def self.source_root
+    File.join(File.dirname(__FILE__), '..', 'templates')
+  end
+
+  def create_gemfile
+    copy_file "Gemfile", "#{name}/Gemfile"
+  end
+
+  def create_rakefile
+    copy_file "Rakefile", "#{name}/Rakefile"
+  end
+
+  def create_template
+    directory "lib", "#{name}/lib"
+    directory "templates", "#{name}/templates"
+    directory "script", "#{name}/script"
+    directory "steps", "#{name}/steps"
+  end
+
+  def create_config
+    config_path = File.expand_path(options[:config])
+    config_path = "config" unless File.directory?(config_path)
+
+    directory config_path, "#{name}/config"
+  end
+
+end
+
+PipelyGenerator.start(ARGV)

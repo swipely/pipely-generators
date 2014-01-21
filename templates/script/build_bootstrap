@@ -1,0 +1,8 @@
+#!/bin/bash
+
+rm -rf tmp
+
+[ -z "$BUNDLE_INSTALL" ] && BUNDLE_INSTALL="bundle install"
+
+$BUNDLE_INSTALL 
+

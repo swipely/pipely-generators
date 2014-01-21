@@ -1,0 +1,27 @@
+--- !map:HashWithIndifferentAccess
+
+common: &common
+  name: <%= name.camelize %>
+  namespace: <%= name %>
+
+  s3:
+    logs: 'bucket-of-logs'
+    steps: 'bucket-of-steps'
+    assets: 'bucket-of-assets'
+
+  security_groups:
+    - 'such-secure'
+
+  database_config:
+    swipely:
+      database: 'database'
+      username: 'username'
+      password: 'password'
+      port: '3306'
+      host: 'my.db.host'
+
+staging:
+  <<: *common
+
+production:
+  <<: *common

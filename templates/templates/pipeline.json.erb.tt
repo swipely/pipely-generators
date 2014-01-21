@@ -1,0 +1,93 @@
+{
+  "objects": [
+    {
+      "id": "Default",
+      "role": "role-aggregator",
+      "resourceRole": "role-aggregator",
+      "failureAndRerunMode": "cascade",
+      "scheduleType": "cron",
+      "onFail": { "ref": "FailureNotify" }
+    },
+
+    {
+      "id": "Nightly",
+      "type": "Schedule",
+      "startDateTime": "<%%= start_date_time %>",
+      "period": "<%%= period %>"
+    },
+
+    {
+      "id": "SuccessNotify",
+      "type": "SnsAlarm",
+      "topicArn": "<%%= arn_topic %>",
+      "subject": "[<%%= environment %> pipelines] SUCCESS: <%= name.camelize %> pipeline step #{node.name}",
+      "message": "<%= name.camelize %> pipeline step SUCCESS\n\nScheduled start: #{node.@scheduledStartTime}\nActual start: #{node.@actualStartTime}\nActual end:\n#{node.@actualEndTime}"
+    },
+
+    {
+      "id": "FailureNotify",
+      "type": "SnsAlarm",
+      "topicArn": "<%%= arn_topic %>",
+      "subject": "[<%%= environment %> pipelines] FAILURE: <%= name.camelize %> pipeline step #{node.name}",
+      "message": "<%= name.camelize %> pipeline step FAILED #{node.name}\n\nScheduled start: #{node.@scheduledStartTime}\nError message:\n#{node.errorMessage}\nError stack trace:\n#{node.errorStackTrace}"
+    },
+
+    {
+      "id": "<%= name.camelize %>EC2Resource",
+      "type": "Ec2Resource",
+      "instanceType": "m1.large",
+      "schedule": { "ref": "Nightly" },
+      "logUri": "<%%= s3_log_prefix %>/<%= name.camelize %>EC2Resource",
+      "terminateAfter": "6 hours",
+      "keyPair": "pipeline-debug",
+      "securityGroups": <%%= security_groups %>
+    },
+
+    {
+      "id": "<%= name.camelize %>EMRCluster",
+      "type": "EmrCluster",
+      "masterInstanceType": "m1.large",
+      "taskInstanceType": "m1.large",
+      "coreInstanceType": "m1.large",
+      "coreInstanceCount": "2",
+      "terminateAfter": "6 hours",
+      "schedule": { "ref": "Nightly" },
+      "enableDebugging": "true",
+      "bootstrapAction": "<%%= s3_step_path('/bootstrap_emr.sh') %>",
+      "emrLogUri": "<%%= s3_log_prefix %>/<%= name.camelize %>EMRLogs",
+      "logUri": "<%%= s3_log_prefix %>/<%= name.camelize %>EMRCluster"
+    },
+
+    {
+      "id": "BootstrapEnvironment",
+      "type": "ShellCommandActivity",
+      "onFail": { "ref": "FailureNotify" },
+      "stdout": "<%%= s3_log_prefix %>/BootstrapEnvironment/stdout",
+      "stderr": "<%%= s3_log_prefix %>/BootstrapEnvironment/stderr",
+      "schedule": { "ref": "Nightly" },
+      "runsOn": { "ref": "<%= name.camelize %>EC2Resource" },
+      "scriptUri": "<%%= s3_step_path('/bootstrap_ec2.sh') %>"
+    },
+
+    {
+      "id": "TouchEMRCluster",
+      "type": "ShellCommandActivity",
+      "onFail": { "ref": "FailureNotify" },
+      "schedule": { "ref": "Nightly" },
+      "runsOn": { "ref": "<%= name.camelize %>EMRCluster" },
+      "command": "true"
+    },
+
+    {
+      "id": "Complete",
+      "type": "ShellCommandActivity",
+      "onFail": { "ref": "FailureNotify" },
+      "schedule": { "ref": "Nightly" },
+      "onSuccess": { "ref": "SuccessNotify" },
+      "runsOn": { "ref": "<%= name.camelize %>EC2Resource" },
+      "dependsOn": { "ref": "TouchEMRCluster" },
+      "command": "true"
+    }
+
+  ]
+}
