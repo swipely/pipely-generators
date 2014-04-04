@@ -31,6 +31,7 @@ class PipelyGenerator < Thor::Group
     directory "templates", "#{name}/templates"
     directory "script", "#{name}/script"
     chmod "script/*", 0755
+    directory "spec", "#{name}/spec"
     directory "steps", "#{name}/steps"
   end
 
