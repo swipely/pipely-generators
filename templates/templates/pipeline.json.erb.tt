@@ -46,7 +46,7 @@
 
     {
       "id": "<%= name.camelize %>EMRCluster",
-      "name": <%= name.camelize %>EMRCluster",
+      "name": "<%= name.camelize %>EMRCluster",
       "type": "EmrCluster",
       "masterInstanceType": "m1.large",
       "taskInstanceType": "m1.large",

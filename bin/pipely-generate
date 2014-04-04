@@ -22,8 +22,9 @@ class PipelyGenerator < Thor::Group
     copy_file "Rakefile", "#{name}/Rakefile"
   end
 
-  def create_gitignore
+  def create_dotfiles
     copy_file ".gitignore", "#{name}/.gitignore"
+    copy_file ".rspec", "#{name}/.rspec"
   end
 
   def create_template
