@@ -34,6 +34,7 @@
 
     {
       "id": "<%= name.camelize %>EC2Resource",
+      "name": "<%= name.camelize %>EC2Resource",
       "type": "Ec2Resource",
       "instanceType": "m1.large",
       "schedule": { "ref": "Nightly" },
@@ -45,6 +46,7 @@
 
     {
       "id": "<%= name.camelize %>EMRCluster",
+      "name": <%= name.camelize %>EMRCluster",
       "type": "EmrCluster",
       "masterInstanceType": "m1.large",
       "taskInstanceType": "m1.large",
