@@ -32,6 +32,7 @@
       "message": "<%= name.camelize %> pipeline step FAILED #{node.name}\n\nScheduled start: #{node.@scheduledStartTime}\nError message:\n#{node.errorMessage}\nError stack trace:\n#{node.errorStackTrace}"
     },
 
+<% if options.ec2? -%>
     {
       "id": "<%= name.camelize %>EC2Resource",
       "name": "<%= name.camelize %>EC2Resource",
@@ -44,6 +45,8 @@
       "securityGroups": <%%= security_groups %>
     },
 
+<% end -%>
+<% if options.emr? -%>
     {
       "id": "<%= name.camelize %>EMRCluster",
       "name": "<%= name.camelize %>EMRCluster",
@@ -60,6 +63,8 @@
       "logUri": "<%%= s3_log_prefix %>/<%= name.camelize %>EMRCluster"
     },
 
+<% end -%>
+<% if options.ec2? -%>
     {
       "id": "BootstrapEnvironment",
       "type": "ShellCommandActivity",
@@ -71,6 +76,8 @@
       "scriptUri": "<%%= s3_step_path('/bootstrap_ec2.sh') %>"
     },
 
+<% end -%>
+<% if options.emr? -%>
     {
       "id": "TouchEMRCluster",
       "type": "ShellCommandActivity",
@@ -80,14 +87,19 @@
       "command": "true"
     },
 
+<% end -%>
     {
       "id": "Complete",
       "type": "ShellCommandActivity",
       "onFail": { "ref": "FailureNotify" },
       "schedule": { "ref": "Nightly" },
       "onSuccess": { "ref": "SuccessNotify" },
-      "runsOn": { "ref": "<%= name.camelize %>EC2Resource" },
-      "dependsOn": { "ref": "TouchEMRCluster" },
+      "runsOn": { "ref": "<%= name.camelize %><%= options.ec2? ? 'EC2Resource' : 'EMRCluster' %>" },
+      "dependsOn": [
+<% if options.emr? -%>
+        { "ref": "TouchEMRCluster" },
+<% end -%>
+      ],
       "command": "true"
     }
 

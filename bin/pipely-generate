@@ -9,6 +9,8 @@ class PipelyGenerator < Thor::Group
   # Define arguments and options
   argument :name
   class_option :config, :default => "~/.pipely-generate/config/"
+  class_option :ec2, :type => :boolean, :default => true
+  class_option :emr, :type => :boolean, :default => true
 
   def self.source_root
     File.join(File.dirname(__FILE__), '..', 'templates')
@@ -33,7 +35,14 @@ class PipelyGenerator < Thor::Group
     directory "script", "#{name}/script"
     chmod "#{name}/script/build_bootstrap", 0755
     directory "spec", "#{name}/spec"
-    directory "steps", "#{name}/steps"
+
+    if options.ec2?
+      copy_file "steps/bootstrap_ec2.sh", "#{name}/steps/bootstrap_ec2.sh"
+    end
+
+    if options.emr?
+      copy_file "steps/bootstrap_emr.sh", "#{name}/steps/bootstrap_emr.sh"
+    end
   end
 
   def create_config
