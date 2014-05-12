@@ -20,7 +20,7 @@
       "id": "SuccessNotify",
       "type": "SnsAlarm",
       "topicArn": "<%%= arn_topic %>",
-      "subject": "[<%%= environment %> pipelines] SUCCESS: <%= name.camelize %> pipeline step #{node.name}",
+      "subject": "<%%= environment %> pipelines SUCCESS: <%= name.camelize %> pipeline step #{node.name}",
       "message": "<%= name.camelize %> pipeline step SUCCESS\n\nScheduled start: #{node.@scheduledStartTime}\nActual start: #{node.@actualStartTime}\nActual end:\n#{node.@actualEndTime}"
     },
 
@@ -28,7 +28,7 @@
       "id": "FailureNotify",
       "type": "SnsAlarm",
       "topicArn": "<%%= arn_topic %>",
-      "subject": "[<%%= environment %> pipelines] FAILURE: <%= name.camelize %> pipeline step #{node.name}",
+      "subject": "<%%= environment %> pipelines FAILURE: <%= name.camelize %> pipeline step #{node.name}",
       "message": "<%= name.camelize %> pipeline step FAILED #{node.name}\n\nScheduled start: #{node.@scheduledStartTime}\nError message:\n#{node.errorMessage}\nError stack trace:\n#{node.errorStackTrace}"
     },
 
