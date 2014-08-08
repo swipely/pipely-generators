@@ -8,5 +8,5 @@ gem "streamingly", '~> 0.0.5'
 gem "pipely", '~> 0.6.2'
 
 group :development, :test do
-  gem "rspec"
+  gem "rspec", '~> 2.14'
 end
