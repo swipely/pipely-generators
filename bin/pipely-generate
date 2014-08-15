@@ -27,6 +27,10 @@ class PipelyGenerator < Thor::Group
     copy_file ".rspec", "#{name}/.rspec"
   end
 
+  def create_readme
+    copy_file "README.md", "#{name}/README.md"
+  end
+
   def create_template
     directory "lib", "#{name}/lib"
     directory "templates", "#{name}/templates"
