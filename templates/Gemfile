@@ -4,9 +4,9 @@ end
 
 gem 'fog'
 gem "rake", '~> 10.1.0'
-gem "streamingly", '~> 0.0.4'
-gem "pipely", '~> 0.2.1'
+gem "streamingly", '~> 0.0.5'
+gem "pipely", '~> 0.6.2'
 
 group :development, :test do
-  gem "rspec"
+  gem "rspec", '~> 2.14'
 end
