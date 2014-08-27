@@ -23,7 +23,8 @@ Pipely::Tasks::UploadSteps.new do |t|
   t.local_path = File.join(File.dirname(__FILE__), 'steps')
 end
 
-Pipely::Tasks::Deploy.new do |t|
+Pipely::Tasks::Deploy.new(:deploy, :when) do |t, args|
+  template.run_now = true if args[:when] == 'now'
   t.definition = definition
 end
 
@@ -31,7 +32,8 @@ Pipely::Tasks::Graph.new do |t|
   t.definition = definition
 end
 
-Pipely::Tasks::Definition.new do |t|
+Pipely::Tasks::Definition.new(:definition, :when) do |t, args|
+  template.run_now = true if args[:when] == 'now'
   t.definition = definition
 end
 
