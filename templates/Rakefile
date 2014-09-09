@@ -38,16 +38,16 @@ Pipely::Tasks::Definition.new(:definition, :when) do |t, args|
 end
 
 namespace :build do
-  desc "Copy pipeline definitions to dist/"
-  task :dist do
-    dist_dir = File.join(File.dirname(__FILE__), 'dist')
-    mkdir_p(dist_dir)
+  desc "Compile definition"
+  task :definition do
+    definition_dir = File.join(File.dirname(__FILE__), 'definitions')
+    mkdir_p(definition_dir)
 
-    Rake::Task["definition"].invoke(dist_dir)
+    Rake::Task["definition"].invoke(definition_dir)
   end
 
   desc "Run all tests for CI"
-  task :continuous => [:spec, :dist]
+  task :continuous => [:spec, :definition]
 end
 
 task :default => :spec
